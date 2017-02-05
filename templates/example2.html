@@ -1,0 +1,29 @@
+<!-- Example 2 is going to show you how to query a separate endpoint for data -->
+<head>
+    <title>Example 2</title>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    
+    <script type="text/javascript">
+        // The reason this is in 
+        $(document).ready(function(){
+            $('#button').click(function(event){
+                $('#main').text("Querying endpoint for data, please hold..."); // make this pop up while query runs
+                $.get(url="/query").done(function(response){
+                    var data = JSON.parse(response);
+                    $('#main').text("Done querying, got " + data.length + " records.");
+                    console.log(data);
+                });
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div id='main'>
+        Hello World
+    </div>
+    
+    <div>
+        <button type="button" id="button">Click me</button>
+    </div>
+</body>

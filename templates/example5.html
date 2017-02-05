@@ -1,0 +1,88 @@
+<!-- Example 5 is going to get more complex
+
+First, there will be the button to query for data. 
+Once the data is retrieved, new buttons will show up that will be used to create or update a set of div
+elements so that it makes bar charts based on different attributes of the data
+-->
+
+
+
+<head>
+    <title>Example 5</title>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.5.0/d3.min.js"></script>
+    
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var data; // assign our variable to this scope so we can reference it later on in other functions
+            var d3_elements; // assign our variable in this scope
+            // we're still using the button onclick handler to make our function
+            $('#run').click(function(event){
+                $('#main').text("Querying endpoint for data, please hold..."); // make this pop up while query runs
+                $.get(url="/query").done(function(response){
+                    data = JSON.parse(response);
+                    $('#main').text("Done querying, got " + data.length + " records.");
+                    $('#run').hide();
+                    $('#d3_buttons').show();
+                    // make our d3 elements now, we'll update their text and such later
+                    d3_elements = d3.select('#d3')
+                                    .selectAll('div')
+                                    .data(data)
+                                    .enter()
+                                    .append('div');
+                    
+                });
+            });
+            
+            function get_field(attribute, record){
+                console.log("in get_field for " + attribute);
+                if (attribute == 'Petal Length'){
+                    return record.petal_length;
+                } else if (attribute == 'Petal Width'){
+                    return record.petal_width;
+                } else if (attribute == 'Sepal Length'){
+                    return record.sepal_length;
+                } else if (attribute == 'Sepal Width'){
+                    return record.sepal_width;
+                } else {return "0";}
+            };
+            
+            function make_bar_graphs(attribute){
+                console.log("In make_bar_graphs for attribute " + attribute);
+                $('#plot_title').text(attribute);
+                d3_elements
+                  .style('display', 'inline-block')
+                  .style('width', '5px')
+                  .style('height', function(d){var h = get_field(attribute, d) * 10;
+                                               return h + 'px'})
+                    
+                  .style('background-color', function(d){return d.color;})
+                
+            };
+            
+            $('#petal_length').click(function(){make_bar_graphs('Petal Length')});
+            $('#petal_width').click(function(){make_bar_graphs('Petal Width')});
+            $('#sepal_length').click(function(){make_bar_graphs('Sepal Length')});
+            $('#sepal_width').click(function(){make_bar_graphs('Sepal Width')});
+        });
+    </script>
+</head>
+
+<body>
+    <div id='main'>
+        Hello World
+    </div>
+    
+    <div>
+        <button type="button" id="run">Run</button>
+    </div>
+    <div style="display:none;" id='d3_buttons'>
+        <button type="button" id='petal_length'>Plot petal length</button>
+        <button type="button" id='petal_width'>Plot petal width</button>
+        <button type="button" id='sepal_length'>Plot sepal length</button>
+        <button type="button" id='sepal_width'>Plot sepal width</button>
+    </div>
+    <div id='d3'>
+        <h1 id='plot_title'></h1>
+    </div>
+</body>

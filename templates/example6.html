@@ -1,0 +1,86 @@
+<!-- Example 6 is going to start making plots
+
+This one will make a scatter plot by creating circles
+-->
+
+
+
+<head>
+    <title>Example 6</title>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.5.0/d3.min.js"></script>
+    
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var data; // assign our variable to this scope so we can reference it later on in other functions
+            var svg; // assign our variable in this scope
+            // we're still using the button onclick handler to make our function
+            $('#run').click(function(event){
+                $('#main').text("Querying endpoint for data, please hold..."); // make this pop up while query runs
+                $.get(url="/query").done(function(response){
+                    data = JSON.parse(response);
+                    document.data = data;
+                    $('#main').text("Done querying, got " + data.length + " records.");
+                    $('#run').hide();
+                    $('#d3_buttons').show();
+                    // make our d3 elements now, we'll update their text and such later
+                    svg = d3.select('#d3')
+                            .append('svg')
+                            .attr('height', 500)
+                            .attr('weight', 500)
+                            .selectAll('circle')
+                            .data(data)
+                            .enter()
+                            .append('circle')
+                    document.svg = svg;
+                    plot();
+                    
+                });
+            });
+            
+
+            function plot(){
+                var x_attr = $('#x_select').find(':selected').attr('value');
+                var y_attr = $('#y_select').find(':selected').attr('value');
+                console.log('in plot');
+                console.log(x_attr + ': ' + data[0][x_attr]);
+                console.log(y_attr + ': ' + data[0][y_attr]);
+                svg.attr('cx', function(d){return d[x_attr] * 50;})
+                   .attr('cy', function(d){return d[y_attr] * 50;})
+                   .attr('r', 2)
+                   .style('fill', function(d){return d.color;})
+            };
+            
+            $('#x_select').change(function(){plot();});
+            $('#y_select').change(function(){plot();});
+        });
+    </script>
+</head>
+
+<body>
+    <div id='main'>
+        Hello World
+    </div>
+    
+    <div>
+        <button type="button" id="run">Run</button>
+    </div>
+    <div style="display:none;" id='d3_buttons'>
+        <select id='x_select'>X Value
+            <option value='petal_width'>Petal Width</option>
+            <option value='petal_length'>Petal Length</option>
+            <option value='sepal_width'>Sepal Width</option>
+            <option value='sepal_length'>Sepal Length</option>
+        </select>
+        
+        <select id='y_select'>Y Value
+            <option value='petal_width'>Petal Width</option>
+            <option value='petal_length' selected>Petal Length</option>
+            <option value='sepal_width'>Sepal Width</option>
+            <option value='sepal_length'>Sepal Length</option>
+        </select>
+    </div>
+    <div id='d3'>
+        
+    </div>
+</body>
