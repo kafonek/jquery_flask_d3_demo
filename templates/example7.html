@@ -1,0 +1,119 @@
+<!-- Example 7 is going to improve upon example 6 by using scales and adding axes
+-->
+
+<head>
+    <title>Example 7</title>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.5.0/d3.min.js"></script>
+    
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var data, canvas, points, title, xAxis, yAxis, // these get defined later, but we need them in this scope
+                
+                // as far as the variables for size are concerned, we are going to 
+                // make a 500x500 outer grid, but then set margins on each side so that
+                // we have a smaller square inside the 500x500 square
+                // the smaller square is where we'll be plotting scatter points
+                // the margins are where we will put the axes and title
+                h = 500,
+                w = 500,
+                margin = {top: 30, right: 30, bottom: 30, left: 30},
+                height = h - margin.top - margin.bottom,
+                width = w - margin.right - margin.left,
+                
+                xScale = d3.scaleLinear().range([0, width]),
+                yScale = d3.scaleLinear().range([height, 0]);
+
+            
+            
+            
+            $('#run').click(function(event){
+                $('#main').text("Querying endpoint for data, please hold..."); // make this pop up while query runs
+                $.get(url="/query").done(function(response){
+                    data = JSON.parse(response);
+                    document.data = data; // just have this here so we can interact with data from chrome console
+                    $('#main').text("Done querying, got " + data.length + " records.");
+                    $('#run').hide();
+                    $('#d3_buttons').show();
+                    // make our d3 elements now, we'll update their text and such later
+                    canvas = d3.select('#d3').append('svg')
+                               .attr('height', h).attr('width', w)
+                               .append('g') // make a subcontainer group that will be the graph canvas
+                               .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')'); 
+                    // so basically canvas is a 440x440 square that has the top left corner at 30,30. 
+                    points = canvas.selectAll('circle').data(data).enter().append('circle');
+                    xAxis = canvas.append('g').attr('transform', 'translate(0,' + height + ')').attr('class', 'x_axis');
+                    // since xAxis is being attached to canvas, translating it by height means it starts at 30,470
+                    // and extends horizontally to 470,470 (complete span of the canvas g element)
+                    yAxis = canvas.append('g').attr('class', 'y_axis');
+                    // since yAxis is being attached to canvas, it's anchored at 30,30 and extends to 30,470
+                    title = canvas.append('text')
+                                  .attr('x', (width/2)) // x-center on the scatterplot graph area
+                                  .attr('y', 0) // y-center in middle of top margin area
+                                  .attr('text-anchor', 'middle');
+                                  
+                    plot();
+                    
+                });
+            });
+            
+
+            function plot(){
+                console.log('in plot');
+                var x_attr = $('#x_select').find(':selected').attr('value');
+                var y_attr = $('#y_select').find(':selected').attr('value');
+                // Scales are used to map values, so if domain is [0, 10] and range is [0, 100]
+                // then an input of 9 comes out as 90.
+                var x_min = d3.min(data, function(d){return d[x_attr];});
+                var x_max = d3.max(data, function(d){return d[x_attr];});
+                                   
+                xScale.domain([(x_min - x_min*.1), (x_max + x_max*.1)]).nice();
+                xAxis.call(d3.axisBottom(xScale));      
+                
+                var y_min = d3.min(data, function(d){return d[y_attr];});
+                var y_max = d3.max(data, function(d){return d[y_attr];});
+                
+                yScale.domain([(y_min - y_min*.1), (y_max + y_max*.1)]).nice();
+                yAxis.call(d3.axisLeft(yScale));
+                
+                points.attr('cx', function(d){return xScale(d[x_attr]);})
+                      .attr('cy', function(d){return yScale(d[y_attr]);})
+                      .attr('r', 2)
+                      .style('fill', function(d){return d.color;})
+                
+                title.text(x_attr + " by " + y_attr);
+            };
+            
+            $('#x_select').change(function(){plot();});
+            $('#y_select').change(function(){plot();});
+        });
+    </script>
+</head>
+
+<body>
+    <div id='main'>
+        Hello World
+    </div>
+    
+    <div>
+        <button type="button" id="run">Run</button>
+    </div>
+    <div style="display:none;" id='d3_buttons'>
+        <select id='x_select'>X Value
+            <option value='petal_width'>Petal Width</option>
+            <option value='petal_length'>Petal Length</option>
+            <option value='sepal_width'>Sepal Width</option>
+            <option value='sepal_length'>Sepal Length</option>
+        </select>
+        
+        <select id='y_select'>Y Value
+            <option value='petal_width'>Petal Width</option>
+            <option value='petal_length' selected>Petal Length</option>
+            <option value='sepal_width'>Sepal Width</option>
+            <option value='sepal_length'>Sepal Length</option>
+        </select>
+    </div>
+    <div id='d3'>
+        
+    </div>
+</body>

@@ -19,7 +19,7 @@ This one will make a scatter plot by creating circles
                 $('#main').text("Querying endpoint for data, please hold..."); // make this pop up while query runs
                 $.get(url="/query").done(function(response){
                     data = JSON.parse(response);
-                    document.data = data;
+                    document.data = data; // just have this here so we can interact with data from chrome console
                     $('#main').text("Done querying, got " + data.length + " records.");
                     $('#run').hide();
                     $('#d3_buttons').show();
@@ -27,7 +27,7 @@ This one will make a scatter plot by creating circles
                     svg = d3.select('#d3')
                             .append('svg')
                             .attr('height', 500)
-                            .attr('weight', 500)
+                            .attr('width', 500)
                             .selectAll('circle')
                             .data(data)
                             .enter()

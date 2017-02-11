@@ -4,14 +4,13 @@
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     
     <script type="text/javascript">
-        // The reason this is in 
         $(document).ready(function(){
             $('#button').click(function(event){
                 $('#main').text("Querying endpoint for data, please hold..."); // make this pop up while query runs
-                $.get(url="/query").done(function(response){
+                $.get(url="/query").done(function(response){ 
                     var data = JSON.parse(response);
                     $('#main').text("Done querying, got " + data.length + " records.");
-                    console.log(data);
+                    console.log(data);  // for our Iris data, this should mean printing out an array of 150 items
                 });
             });
         });

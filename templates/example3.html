@@ -1,22 +1,28 @@
 <!-- Example 3 is going to show you how to query a separate endpoint for data, and create elements in d3 -->
 <head>
     <title>Example 3</title>
+    <!-- Loading both JQuery and D3 now -- the order of these can matter if there's variable name conflicts
+         or if one relies on the other being loaded first.  With these two libraries, it's not an issue
+    -->
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.5.0/d3.min.js"></script>
     
     <script type="text/javascript">
         $(document).ready(function(){
-            // we're still using the button onclick handler to make our function
             $('#run').click(function(event){
-                $('#main').text("Querying endpoint for data, please hold..."); // make this pop up while query runs
+                $('#main').text("Querying endpoint for data, please hold..."); 
                 $.get(url="/query").done(function(response){
                     var data = JSON.parse(response);
                     $('#main').text("Done querying, got " + data.length + " records.");
                     console.log(data);
                     
-                    d3.select('#d3') // select the d3 div
+                    d3.select('#d3') // select the id=d3 div
                       .append('div') // make a new div
                       .text(data.length + " records ready to be used with d3.")
+                    
+                    // While the d3 syntax looks really similar to jquery syntax for DOM manipulation, it has slight differences.
+                    // For instance, $('#d3').append('div').text(..) would clear and replace whatever was in the id=d3 div.
+                    // $('#d3').append("<div>150 records..</div>") is the Jquery equivalent to the above.
                     
                 });
             });

@@ -24,7 +24,7 @@ elements so that it makes bar charts based on different attributes of the data
                     $('#main').text("Done querying, got " + data.length + " records.");
                     $('#run').hide();
                     $('#d3_buttons').show();
-                    // make our d3 elements now, we'll update their text and such later
+                    // make our d3 elements now, we'll update their text and style later
                     d3_elements = d3.select('#d3')
                                     .selectAll('div')
                                     .data(data)
@@ -34,36 +34,22 @@ elements so that it makes bar charts based on different attributes of the data
                 });
             });
             
-            function get_field(attribute, record){
-                console.log("in get_field for " + attribute);
-                if (attribute == 'Petal Length'){
-                    return record.petal_length;
-                } else if (attribute == 'Petal Width'){
-                    return record.petal_width;
-                } else if (attribute == 'Sepal Length'){
-                    return record.sepal_length;
-                } else if (attribute == 'Sepal Width'){
-                    return record.sepal_width;
-                } else {return "0";}
-            };
-            
-            function make_bar_graphs(attribute){
-                console.log("In make_bar_graphs for attribute " + attribute);
-                $('#plot_title').text(attribute);
-                d3_elements
+            function plot(element){
+                $('#plot_title').text(element.text());
+                
+                d3_elements // d3_elements is a reference to all of the 150 existing divs that were created earlier
+                            // the following chained together functions just "fills them out" so to speak
                   .style('display', 'inline-block')
                   .style('width', '5px')
-                  .style('height', function(d){var h = get_field(attribute, d) * 10;
-                                               return h + 'px'})
-                    
+                  .style('height', function(d){return d[element.attr('val')] * 10 + 'px';})
+                  // i.e. d['petal_length'] * 10 or something like that
                   .style('background-color', function(d){return d.color;})
                 
             };
             
-            $('#petal_length').click(function(){make_bar_graphs('Petal Length')});
-            $('#petal_width').click(function(){make_bar_graphs('Petal Width')});
-            $('#sepal_length').click(function(){make_bar_graphs('Sepal Length')});
-            $('#sepal_width').click(function(){make_bar_graphs('Sepal Width')});
+            $('#d3_buttons button').click(function(){plot($(this))});  
+            // Passing in $(this) as an argument is passing in the full <button ...>text</button> html element (as a jquery object)
+            
         });
     </script>
 </head>
@@ -77,10 +63,10 @@ elements so that it makes bar charts based on different attributes of the data
         <button type="button" id="run">Run</button>
     </div>
     <div style="display:none;" id='d3_buttons'>
-        <button type="button" id='petal_length'>Plot petal length</button>
-        <button type="button" id='petal_width'>Plot petal width</button>
-        <button type="button" id='sepal_length'>Plot sepal length</button>
-        <button type="button" id='sepal_width'>Plot sepal width</button>
+        <button type="button" val='petal_length'>Petal Length</button>
+        <button type="button" val='petal_width'>Petal Width</button>
+        <button type="button" val='sepal_length'>Sepal Length</button>
+        <button type="button" val='sepal_width'>Sepal Width</button>
     </div>
     <div id='d3'>
         <h1 id='plot_title'></h1>

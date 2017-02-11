@@ -4,16 +4,22 @@ Note: this is how you comment in html.  In javascript, it's //
 -->
 <head>
     <title>Example 1</title>
+    <!-- This is how you "import" a library in JS.  You don't need to install it on your computer like with R/Python
+         Instead you load it from a source webpage (although that can be hosted on the same site as the rest of your code)
+    -->
     <script type='text/javascript' src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     
     <script type="text/javascript">
         // The reason for this document.ready stuff is that the browser is executing 
         // the <head> section of the html first.  We won't be able to interact with 
         // html elements in the <body> section with our javascript unless we wait for 
-        // the $(document) to be ready (i.e. rendered)
+        // the the entire html document to be ready before executing javascript code
+        
+        // Alternatively if we put the javascript inside the <body> portion, we wouldn't need the document.ready stuff
+        // but using document.ready is sort of the standard practice and we'll do this for every example
         $(document).ready(function(){
             $('#button').click(function(event){
-                console.log("in the click function"); // this is like printing in javascript
+                console.log("in the click function"); // this is like printing for javascript
                 $('#main').text("The button has been clicked.");
                 $('#button').hide();
             });
