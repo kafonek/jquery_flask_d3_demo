@@ -1,7 +1,6 @@
 from flask import Flask, render_template
-import random
 import time
-import json
+import random
 
 app = Flask(__name__)
 
